@@ -1,0 +1,33 @@
+package main;
+
+message JobMsg {
+  // a nickname for the job, totally optional
+  optional string name = 1;
+  // the block for selecting the frequency of the job
+  required FrequencyMsg frequency = 2;
+  // fully qualified path for the executable
+  required string exec_path = 3;
+  // any args that need to be passed to it
+  optional string args = 4;
+  // true if the job should not run
+  optional bool suspend = 5;
+}
+
+message FrequencyMsg {
+  required int32 month = 1 [default = -1];
+  required int32 day = 2 [default = -1];
+  enum DAYS {
+    NODAY = -1;
+    SUN = 0;
+    MON = 1;
+    TUE = 2;
+    WED = 3;
+    THU = 4;
+    FRI = 5;
+    SAT = 6;
+  }
+  required DAYS weekday = 3 [default = NODAY];
+  required int32 hour = 4 [default = -1];
+  required int32 minute = 5 [default=-1];
+  required int32 second = 6 [default=-1];
+}

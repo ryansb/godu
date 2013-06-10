@@ -11,14 +11,13 @@ import (
 var JobArguments string
 
 const (
-	configCmd      = "config"
-	makeConfigCmd  = "mkconfig"
-	helpCmd        = "help"
-	addCmd         = "add"
-	delCmd         = "del"
-	configLoc      = "godu.gocfg"
-	version        = "godu version 0.1\nhttps://github.com/ryansb/godu "
-	helpText       = "godu is a job scheduling application that runs in " +
+	configCmd = "config"
+	helpCmd   = "help"
+	addCmd    = "add"
+	delCmd    = "del"
+	configLoc = "godu.gocfg"
+	version   = "godu version 0.1\nhttps://github.com/ryansb/godu "
+	helpText  = "godu is a job scheduling application that runs in " +
 		"the background and repeats infrequent jobs.\n" +
 		"Usage:\ngodu add <executable> every 10 minutes\n" +
 		"# provide arguments to pass to the executable when it runs\n" +
@@ -59,8 +58,17 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case makeConfigCmd:
-		fmt.Println("make config")
+	case configCmd:
+		fmt.Println("Config check.")
+		cfg, err := readConfig(configLoc)
+		if err != nil {
+			fmt.Println("Something bad happened.")
+			fmt.Println(err)
+		}
+		fmt.Println(cfg.Admin.MaxWorkers)
+
+		job := Job{}
+		fmt.Println(job.GetRotation())
 	case addCmd:
 		fmt.Println("Add unimplemented.")
 	case delCmd:
