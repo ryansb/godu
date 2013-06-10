@@ -12,12 +12,11 @@ var JobArguments string
 
 const (
 	configCmd      = "config"
-	cleanConfigCmd = "cleanconfig"
 	makeConfigCmd  = "mkconfig"
 	helpCmd        = "help"
 	addCmd         = "add"
 	delCmd         = "del"
-	configLoc      = "config.json"
+	configLoc      = "godu.gocfg"
 	version        = "godu version 0.1\nhttps://github.com/ryansb/godu "
 	helpText       = "godu is a job scheduling application that runs in " +
 		"the background and repeats infrequent jobs.\n" +
@@ -60,9 +59,6 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	case cleanConfigCmd:
-		cleaned, _ := cleanConfig(configLoc)
-		fmt.Println(string(cleaned))
 	case makeConfigCmd:
 		fmt.Println("make config")
 	case addCmd:
