@@ -27,6 +27,7 @@ func (job Job) Run(abort *chan bool) (){
 	select {
 	case <- gotlock:
 		go func() {
+			defer log.Debug("Started job.")
 			defer job.Guard.Unlock()
 			timer := time.After(interval)
 			for {

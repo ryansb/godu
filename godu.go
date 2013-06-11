@@ -1,14 +1,16 @@
 package main
 
 import (
-	//"encoding/json"
 	"flag"
 	"fmt"
 	"os"
+	"github.com/op/go-logging"
 )
 
 // args for the job being added
 var JobArguments string
+
+var log = logging.MustGetLogger("ryansb.godu")
 
 const (
 	configCmd = "config"
@@ -33,6 +35,7 @@ const (
 )
 
 func main() {
+	logging.SetLevel(logging.INFO, "ryansb.godu")
 	fs := flag.NewFlagSet("godu", flag.ExitOnError)
 	const (
 		usageArgs = "Arguments to pass to the executable when it runs"
@@ -60,12 +63,12 @@ func main() {
 	switch os.Args[1] {
 	case configCmd:
 		fmt.Println("Config check.")
-		cfg, err := readConfig(configLoc)
+		_, err := readConfig(configLoc)
 		if err != nil {
-			fmt.Println("Something bad happened.")
+			fmt.Println("Something is wrong with the config.")
 			fmt.Println(err)
 		}
-		fmt.Println(cfg.Admin.MaxWorkers)
+		fmt.Println("Config is valid.")
 
 		job := Job{}
 		fmt.Println(job.GetRotation())
