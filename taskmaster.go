@@ -46,13 +46,13 @@ func (job Job) Run(abort *chan bool) (){
 
 func (job Job) GetRotation() (rotate time.Duration) {
 	freq := job.Msg.GetFrequency()
-	if freq.GetSecond() <= 0 {
+	if freq.GetSecond() >= 0 {
 		rotate += time.Second * time.Duration(freq.GetSecond())
 	}
-	if freq.GetMinute() <= 0 {
+	if freq.GetMinute() >= 0 {
 		rotate += time.Minute * time.Duration(freq.GetMinute())
 	}
-	if freq.GetHour() <= 0 {
+	if freq.GetHour() >= 0 {
 		rotate += time.Hour * time.Duration(freq.GetHour())
 	}
 	return
