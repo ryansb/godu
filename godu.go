@@ -4,13 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	stdlog "log"
 	"github.com/op/go-logging"
 )
 
 // args for the job being added
 var JobArguments string
 
-var log = logging.MustGetLogger("ryansb.godu")
+var log = logging.MustGetLogger("godu")
 
 const (
 	configCmd = "config"
@@ -35,7 +36,11 @@ const (
 )
 
 func main() {
-	logging.SetLevel(logging.INFO, "ryansb.godu")
+	logBackend := logging.NewLogBackend(os.Stderr, "[godu] ", stdlog.LstdFlags|stdlog.Lshortfile)
+	logBackend.Color = true
+	logging.SetBackend(logBackend)
+	logging.SetLevel(logging.DEBUG, "")
+	log.Debug("parsing flags")
 	fs := flag.NewFlagSet("godu", flag.ExitOnError)
 	const (
 		usageArgs = "Arguments to pass to the executable when it runs"
