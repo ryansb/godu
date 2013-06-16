@@ -7,6 +7,8 @@ import (
 
 type Config struct {
 	Admin struct {
+		// but log when you *would* have run them
+		BackEnds []BackEnd
 		// how many concurrent jobs can be run by the scheduler
 		MaxWorkers int64
 		// maxumim length a job can run (seconds)

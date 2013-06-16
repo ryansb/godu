@@ -4,12 +4,11 @@ import (
 	"fmt"
 )
 
-type BackEndType int
+type BackEndType string
 
 const (
-	_               = iota
-	JSONFileBackend = 1 + iota
-	ProtoFileBackend
+	jsonFileBackend  = "jsonfile"
+	protoFileBackend = "protofile"
 )
 
 type BackEnd struct {
@@ -23,10 +22,22 @@ func ListExecs() (execs []string, err error) {
 }
 
 // JobReader can take a list of backends (only files currently)
-func JobReader(backends []BackEnd) (jobs []Job) {
-	log.Debug("")
+func JobReader(backends ...BackEnd) (jobs []Job, err error) {
+	log.Debug("Received %d backends to read jobs from", len(backends))
 	for _, back := range backends {
-		fmt.Println(back.URL)
+		switch back.Type {
+		case jsonFileBackend:
+			//do stuff
+			log.Debug("Reading JSON file")
+		case protoFileBackend:
+			log.Error("Protobuf backend unimplemented")
+			continue
+		default:
+			log.Error("Backend type '%s' unknown with URL '%s'",
+				back.Type, back.URL)
+			continue
+		}
+		log.Debug("Setting up backend %s", back.URL)
 	}
-	return make([]Job, 3)
+	return nil, nil
 }
