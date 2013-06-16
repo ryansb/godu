@@ -7,12 +7,12 @@ import (
 
 type Job struct {
 	Guard sync.Mutex
-	Msg JobMsg
+	Msg   JobMsg
 }
 
-func (job Job) Run(abort *chan bool) (){
+func (job Job) Run(abort *chan bool) {
 	t := time.Now()
-	if ! job.HappensOn(&t) {
+	if !job.HappensOn(&t) {
 		log.Debug("Job", job.Msg.GetName(), "doesn't happen today. Bailing out.")
 		return
 	}
@@ -22,14 +22,14 @@ func (job Job) Run(abort *chan bool) (){
 
 	gotlock := make(chan bool)
 
-	go func () {
+	go func() {
 		job.Guard.Lock()
 		log.Debug("Received lock for job", job.Msg.GetName())
 		gotlock <- true
 	}()
 
 	select {
-	case <- gotlock:
+	case <-gotlock:
 		go func() {
 			log.Debug("Waiting to start", job.Msg.GetName())
 			start := time.Now()
@@ -38,17 +38,17 @@ func (job Job) Run(abort *chan bool) (){
 			timer := time.After(interval)
 			for {
 				select {
-				case <- timer:
+				case <-timer:
 					log.Debug("Started job", job.Msg.GetName())
 					// do job
-				case <- *abort:
+				case <-*abort:
 					log.Debug("Aborted job", job.Msg.GetName())
 					// if, before we're done, the app exits, then GTFO.
 					return
 				}
 			}
 		}()
-	case <- time.After(time.Second * 30):
+	case <-time.After(time.Second * 30):
 		log.Debug("Couldn't get lock for job", job.Msg.GetName())
 		return
 	}
@@ -66,18 +66,18 @@ func (job Job) GetRotation() (rotate time.Duration) {
 		rotate += time.Second * time.Duration(freq.GetSecond())
 	}
 	log.Debug("time.Duration for", job.Msg.GetName(), "is", rotate,
-	"for input",
-	freq.GetHour(), "h",
-	freq.GetMinute(), "m",
-	freq.GetSecond(), "s")
+		"for input",
+		freq.GetHour(), "h",
+		freq.GetMinute(), "m",
+		freq.GetSecond(), "s")
 	return
 }
 
-func (job Job) HappensOn(t *time.Time) (bool) {
+func (job Job) HappensOn(t *time.Time) bool {
 	freq := job.Msg.GetFrequency()
 
 	return int8(freq.GetWeekday()) == int8(t.Weekday()) ||
-	freq.GetWeekday() == -1 &&
-	freq.GetMonth() == int32(t.Month()) &&
-	freq.GetDay() == int32(t.Day())
+		freq.GetWeekday() == -1 &&
+			freq.GetMonth() == int32(t.Month()) &&
+			freq.GetDay() == int32(t.Day())
 }

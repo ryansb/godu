@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"code.google.com/p/gcfg"
+	"fmt"
 )
 
 type Config struct {

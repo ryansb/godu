@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"os"
-	stdlog "log"
 	"github.com/op/go-logging"
+	stdlog "log"
+	"os"
 )
 
 // args for the job being added
