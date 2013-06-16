@@ -13,7 +13,7 @@ type Job struct {
 func (job Job) Run(abort *chan bool) {
 	t := time.Now()
 	if !job.HappensOn(&t) {
-		log.Debug("Job", job.Msg.GetName(), "doesn't happen today. Bailing out.")
+		log.Debug("Job %s doesn't happen today. Bailing out.", job.Msg.GetName())
 		return
 	}
 
@@ -24,32 +24,33 @@ func (job Job) Run(abort *chan bool) {
 
 	go func() {
 		job.Guard.Lock()
-		log.Debug("Received lock for job", job.Msg.GetName())
+		log.Debug("Received lock for job %s", job.Msg.GetName())
 		gotlock <- true
 	}()
 
 	select {
 	case <-gotlock:
 		go func() {
-			log.Debug("Waiting to start", job.Msg.GetName())
+			log.Debug("Waiting to start %s", job.Msg.GetName())
 			start := time.Now()
-			defer log.Info("Finished job", job.Msg.GetName(), "took", time.Since(start))
+			defer log.Info("Finished job %s took %s", job.Msg.GetName(),
+				time.Since(start))
 			defer job.Guard.Unlock()
 			timer := time.After(interval)
 			for {
 				select {
 				case <-timer:
-					log.Debug("Started job", job.Msg.GetName())
+					log.Debug("Started job %s", job.Msg.GetName())
 					// do job
 				case <-*abort:
-					log.Debug("Aborted job", job.Msg.GetName())
+					log.Debug("Aborted job %s", job.Msg.GetName())
 					// if, before we're done, the app exits, then GTFO.
 					return
 				}
 			}
 		}()
 	case <-time.After(time.Second * 30):
-		log.Debug("Couldn't get lock for job", job.Msg.GetName())
+		log.Debug("Couldn't get lock for job %s", job.Msg.GetName())
 		return
 	}
 }
@@ -65,11 +66,8 @@ func (job Job) GetRotation() (rotate time.Duration) {
 	if freq.GetSecond() >= 0 {
 		rotate += time.Second * time.Duration(freq.GetSecond())
 	}
-	log.Debug("time.Duration for", job.Msg.GetName(), "is", rotate,
-		"for input",
-		freq.GetHour(), "h",
-		freq.GetMinute(), "m",
-		freq.GetSecond(), "s")
+	log.Debug("time.Duration for %s is %s for input %d:%d:%d", job.Msg.GetName(), rotate,
+		freq.GetHour(), freq.GetMinute(), freq.GetSecond())
 	return
 }
 
