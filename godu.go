@@ -18,6 +18,7 @@ const (
 	helpCmd   = "help"
 	addCmd    = "add"
 	delCmd    = "del"
+	listCmd   = "list"
 	configLoc = "godu.gocfg"
 	version   = "godu version 0.1\nhttps://github.com/ryansb/godu "
 	helpText  = "godu is a job scheduling application that runs in " +
@@ -81,6 +82,8 @@ func main() {
 		fmt.Println("Add unimplemented.")
 	case delCmd:
 		fmt.Println("Del unimplemented.")
+	case listCmd:
+		fmt.Println("List unimplemented.")
 	case helpCmd:
 		fmt.Println(helpText)
 	default:
