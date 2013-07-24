@@ -1,4 +1,4 @@
-package main;
+package backend;
 
 message JobMsg {
   // a nickname for the job, totally optional

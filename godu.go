@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/op/go-logging"
+	"github.com/ryansb/godu/backend"
 	stdlog "log"
 	"os"
 )
