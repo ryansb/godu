@@ -3,7 +3,19 @@ package backend
 import (
 	"code.google.com/p/gcfg"
 	"fmt"
+	"github.com/op/go-logging"
+	stdlog "log"
+	"os"
 )
+
+var log = logging.MustGetLogger("godu")
+
+func init() {
+	logBackend := logging.NewLogBackend(os.Stderr, "[godu] ", stdlog.LstdFlags|stdlog.Lshortfile)
+	logBackend.Color = true
+	logging.SetBackend(logBackend)
+	logging.SetLevel(logging.DEBUG, "")
+}
 
 type Config struct {
 	Admin struct {
@@ -23,7 +35,7 @@ type Config struct {
 	}
 }
 
-func readConfig(loc string) (Config, error) {
+func ReadConfig(loc string) (Config, error) {
 	var conf Config
 	err := gcfg.ReadFileInto(&conf, loc)
 	if err != nil {

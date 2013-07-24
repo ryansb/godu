@@ -3,16 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/op/go-logging"
 	"github.com/ryansb/godu/backend"
-	stdlog "log"
 	"os"
 )
 
 // args for the job being added
 var JobArguments string
-
-var log = logging.MustGetLogger("godu")
 
 const (
 	configCmd = "config"
@@ -38,11 +34,6 @@ const (
 )
 
 func main() {
-	logBackend := logging.NewLogBackend(os.Stderr, "[godu] ", stdlog.LstdFlags|stdlog.Lshortfile)
-	logBackend.Color = true
-	logging.SetBackend(logBackend)
-	logging.SetLevel(logging.DEBUG, "")
-	log.Debug("parsing flags")
 	fs := flag.NewFlagSet("godu", flag.ExitOnError)
 	const (
 		usageArgs = "Arguments to pass to the executable when it runs"
@@ -70,14 +61,14 @@ func main() {
 	switch os.Args[1] {
 	case configCmd:
 		fmt.Println("Config check.")
-		_, err := readConfig(configLoc)
+		_, err := backend.ReadConfig(configLoc)
 		if err != nil {
 			fmt.Println("Something is wrong with the config.")
 			fmt.Println(err)
 		}
 		fmt.Println("Config is valid.")
 
-		job := Job{}
+		job := backend.Job{}
 		fmt.Println(job.GetRotation())
 	case addCmd:
 		fmt.Println("Add unimplemented.")
