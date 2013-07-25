@@ -1,8 +1,8 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"github.com/codegangsta/cli"
 	"github.com/ryansb/godu/backend"
 	"os"
 )
@@ -11,13 +11,7 @@ import (
 var JobArguments string
 
 const (
-	configCmd = "config"
-	helpCmd   = "help"
-	addCmd    = "add"
-	delCmd    = "del"
-	listCmd   = "list"
 	configLoc = "godu.gocfg"
-	version   = "godu version 0.1\nhttps://github.com/ryansb/godu "
 	helpText  = "godu is a job scheduling application that runs in " +
 		"the background and repeats infrequent jobs.\n" +
 		"Usage:\ngodu add <executable> every 10 minutes\n" +
@@ -34,51 +28,52 @@ const (
 )
 
 func main() {
-	fs := flag.NewFlagSet("godu", flag.ExitOnError)
-	const (
-		usageArgs = "Arguments to pass to the executable when it runs"
-	)
-	fs.StringVar(&JobArguments, "args", "", usageArgs)
-	fs.StringVar(&JobArguments, "a", "", usageArgs)
+	app := cli.NewApp()
+	app.Name = "godu"
+	app.Version = "0.1"
+	app.Usage = helpText
+	app.Commands = []cli.Command{
+		{
+			Name:      "add",
+			ShortName: "a",
+			Action: func(c *cli.Context) {
+				fmt.Println("Add unimplemented.")
+				fmt.Println(c.Args)
+			},
+		},
+		{
+			Name:      "delete",
+			ShortName: "rm",
+			Action: func(c *cli.Context) {
+				fmt.Println("Delete unimplemented.")
+			},
+		},
+		{
+			Name:      "list",
+			ShortName: "ls",
+			Action: func(c *cli.Context) {
+				fmt.Println("List unimplemented.")
+			},
+		},
+		{
+			Name:      "config",
+			ShortName: "c",
+			Action: func(c *cli.Context) {
+				fmt.Println("Config check.")
+				_, err := backend.ReadConfig(configLoc)
+				if err != nil {
+					fmt.Println("Something is wrong with the config.")
+					fmt.Println(err)
+				}
+				fmt.Println("Config is valid.")
 
-	if len(os.Args) <= 1 {
-		fmt.Println("No args. Wat?")
-		return
-	} else if len(os.Args) == 2 {
-		if string(os.Args[1]) == "--help" ||
-			string(os.Args[1]) == "-h" {
-			fmt.Println(helpText)
-			return
-		} else if string(os.Args[1]) == "--version" ||
-			string(os.Args[1]) == "-v" {
-			fmt.Println(version)
-			return
-		}
-	} else {
-		fs.Parse(os.Args[2:])
+				job := backend.Job{}
+				fmt.Println(job.GetRotation())
+			},
+		},
 	}
-
-	switch os.Args[1] {
-	case configCmd:
-		fmt.Println("Config check.")
-		_, err := backend.ReadConfig(configLoc)
-		if err != nil {
-			fmt.Println("Something is wrong with the config.")
-			fmt.Println(err)
-		}
-		fmt.Println("Config is valid.")
-
-		job := backend.Job{}
-		fmt.Println(job.GetRotation())
-	case addCmd:
-		fmt.Println("Add unimplemented.")
-	case delCmd:
-		fmt.Println("Del unimplemented.")
-	case listCmd:
-		fmt.Println("List unimplemented.")
-	case helpCmd:
-		fmt.Println(helpText)
-	default:
-		fmt.Println("Subcommand not found.")
+	app.Flags = []cli.Flag{
+		cli.StringFlag{"args", "", "Arguments to pass to the executable"},
 	}
+	app.Run(os.Args)
 }
