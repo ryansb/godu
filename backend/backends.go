@@ -58,8 +58,23 @@ func readJSONInto(jobs *[]Job, filename string) error {
 	return nil
 }
 
+func MarshalJobs(b *BackEnd, jobs *[]Job) error {
+	if b.Type == protoFileBackend {
+		buf := make([]byte, 1)
+		for _, j := range *jobs {
+			buf = append(buf, []byte(j.Msg.String())...)
+			buf = append(buf, '\n')
+		}
+		file_err := ioutil.WriteFile(b.URL, buf, 0750)
+		if file_err != nil {
+			return file_err
+		}
+	}
+	return nil
+}
+
 func (job *Job) Persist(backend, backend_type string) error {
-	b := Backend
+	b := BackEnd{}
 	b.URL = backend
 	switch backend_type {
 	case jsonFileBackend:
@@ -67,10 +82,14 @@ func (job *Job) Persist(backend, backend_type string) error {
 	case protoFileBackend:
 		b.Type = protoFileBackend
 	default:
-		return error{"backend_type invalid"}
+		return fmt.Errorf("backend_type invalid")
 	}
 	all_jobs, err := ReadJobs(b)
 	if err != nil {
 		return err
 	}
+	jobs := append(all_jobs, *job)
+	MarshalJobs(&b, &jobs)
+
+	return nil
 }

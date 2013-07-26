@@ -39,8 +39,11 @@ func main() {
 			ShortName: "a",
 			Action: func(c *cli.Context) {
 				executable := c.Args()[0]
-				j := NewJob(executable, c.String("args"),
-					strings.Join(c.Args()[1:]), c.String("name"))
+				j, err := backend.NewJob(executable, c.String("args"),
+					strings.Join(c.Args()[1:], " "), c.String("name"))
+				if err != nil {
+					fmt.Println(err)
+				}
 				j.Persist(c.String("backend"), c.String("backend-type"))
 			},
 			Flags: []cli.Flag{
