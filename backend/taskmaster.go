@@ -10,7 +10,7 @@ type Job struct {
 	Msg   JobMsg
 }
 
-func (job Job) Run(abort *chan bool) {
+func (job *Job) Run(abort *chan bool) {
 	t := time.Now()
 	if !job.HappensOn(&t) {
 		log.Debug("Job %s doesn't happen today. Bailing out.", job.Msg.GetName())
@@ -55,7 +55,7 @@ func (job Job) Run(abort *chan bool) {
 	}
 }
 
-func (job Job) GetRotation() (rotate time.Duration) {
+func (job *Job) GetRotation() (rotate time.Duration) {
 	freq := job.Msg.GetFrequency()
 	if freq.GetHour() >= 0 {
 		rotate += time.Hour * time.Duration(freq.GetHour())
@@ -71,11 +71,36 @@ func (job Job) GetRotation() (rotate time.Duration) {
 	return
 }
 
-func (job Job) HappensOn(t *time.Time) bool {
+func (job *Job) HappensOn(t *time.Time) bool {
 	freq := job.Msg.GetFrequency()
 
 	return int8(freq.GetWeekday()) == int8(t.Weekday()) ||
 		freq.GetWeekday() == -1 &&
 			freq.GetMonth() == int32(t.Month()) &&
 			freq.GetDay() == int32(t.Day())
+}
+
+func NewInterval(interval string) (*FrequencyMsg, error) {
+	fm := &FrequencyMsg{}
+	var min int32 = 2
+	fm.Minute = &min
+	return fm, nil
+}
+
+func NewJob(executable, args, interval, name string) (Job, error) {
+	job := Job{}
+	job.Guard = sync.Mutex{}
+	job.Msg = JobMsg{
+		Name:     &name,
+		ExecPath: &executable,
+		Args:     &args,
+	}
+
+	int_msg, interval_error := NewInterval(interval)
+	if interval_error != nil {
+		return Job{}, interval_error
+	}
+	job.Msg.Frequency = int_msg
+
+	return job, nil
 }

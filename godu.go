@@ -5,6 +5,7 @@ import (
 	"github.com/codegangsta/cli"
 	"github.com/ryansb/godu/backend"
 	"os"
+	"strings"
 )
 
 // args for the job being added
@@ -37,8 +38,14 @@ func main() {
 			Name:      "add",
 			ShortName: "a",
 			Action: func(c *cli.Context) {
-				fmt.Println("Add unimplemented.")
-				fmt.Println(c.Args)
+				executable := c.Args()[0]
+				j := NewJob(executable, c.String("args"),
+					strings.Join(c.Args()[1:]), c.String("name"))
+				j.Persist(c.String("backend"), c.String("backend-type"))
+			},
+			Flags: []cli.Flag{
+				cli.StringFlag{"args", "", "Arguments to pass to the executable"},
+				cli.StringFlag{"name", "", "Name to give the job"},
 			},
 		},
 		{
@@ -73,7 +80,10 @@ func main() {
 		},
 	}
 	app.Flags = []cli.Flag{
-		cli.StringFlag{"args", "", "Arguments to pass to the executable"},
+		cli.BoolFlag{"verbose", "Be noisy"},
+		cli.StringFlag{"config", "./godu.gocfg", "Location of the config file"},
+		cli.StringFlag{"backend", "./godu.db", "Location of the config file"},
+		cli.StringFlag{"backend-type", "json", "Format to store jobs"},
 	}
 	app.Run(os.Args)
 }

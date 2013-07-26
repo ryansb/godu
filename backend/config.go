@@ -19,7 +19,7 @@ func init() {
 
 type Config struct {
 	Admin struct {
-		// but log when you *would* have run them
+		// files to read from
 		BackEnds []BackEnd
 		// how many concurrent jobs can be run by the scheduler
 		MaxWorkers int64
@@ -31,7 +31,7 @@ type Config struct {
 		LogFile int64
 		// run no jobs at all for the present time
 		// but log when you *would* have run them
-		SuspendAll bool
+		DryRun bool
 	}
 }
 
