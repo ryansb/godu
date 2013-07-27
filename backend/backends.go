@@ -74,18 +74,23 @@ func MarshalJobs(b *BackEnd, jobs *[]Job) error {
 }
 
 func (job *Job) Persist(backend, backend_type string) error {
+	log.Debug("Persisting jobs")
 	b := BackEnd{}
 	b.URL = backend
 	switch backend_type {
 	case jsonFileBackend:
+		log.Debug("JSON backend")
 		b.Type = jsonFileBackend
 	case protoFileBackend:
+		log.Debug("Protobuf backend")
 		b.Type = protoFileBackend
 	default:
+		log.Error("backend_type '%s' invalid", backend_type)
 		return fmt.Errorf("backend_type invalid")
 	}
 	all_jobs, err := ReadJobs(b)
 	if err != nil {
+		log.Warning("Error reading existing jobs.")
 		return err
 	}
 	jobs := append(all_jobs, *job)

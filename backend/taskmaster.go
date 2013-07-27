@@ -88,6 +88,8 @@ func NewInterval(interval string) (*FrequencyMsg, error) {
 }
 
 func NewJob(executable, args, interval, name string) (Job, error) {
+	log.Debug("Job creation started. \n{\n\tName: %s \n\tExec: %s \n\tArgs: %s \n\tInterval: %s\n}",
+		name, executable, args, interval)
 	job := Job{}
 	job.Guard = sync.Mutex{}
 	job.Msg = JobMsg{
@@ -95,7 +97,6 @@ func NewJob(executable, args, interval, name string) (Job, error) {
 		ExecPath: &executable,
 		Args:     &args,
 	}
-
 	int_msg, interval_error := NewInterval(interval)
 	if interval_error != nil {
 		return Job{}, interval_error
